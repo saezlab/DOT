@@ -1,0 +1,31 @@
+Package: DOT
+Title: DOT: A flexible multi-objective optimization framework for transferring features across single-cell and spatial omics
+Version: 0.0.0.9000
+Authors@R: 
+    person("Arezou", "Rahimi", , "arezou.rahimi@uni-heidelberg.de", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-0285-8089"))
+Description: DOT is a method for transferring cell features from a reference single-cell RNA-seq data to spots/cells in spatial omics. It operates by optimizing a combination of multiple objectives using a Frank-Wolfe algorithm to produce a high quality transfer. Apart from transferring cell types/states to spatial omics, DOT can be used for transferring other relevant categorical or continuous phenotypes from one set of omics to another, such as estimating the expression of missinng genes or transferring transcription factor/pathway activities.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Imports: 
+    anndata,
+    fields,
+    ggplot2,
+    magrittr,
+    Matrix,
+    methods,
+    Rcpp,
+    Seurat,
+    sparseMatrixStats,
+    stats,
+    stringr
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
