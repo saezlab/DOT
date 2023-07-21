@@ -1,7 +1,7 @@
 # DOT: A flexible multi-objective optimization framework for transferring features across single-cell and spatial omics <img src="figures/DOT_icon.png" align="right" height = "150"/>
 
 <!-- badges: start -->
-[![R build status](https://github.com/saezlab/decoupleR/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/saezlab/DOT/actions)
+[![R-CMD-check](https://github.com/saezlab/DOT/actions/workflows/R-CMD-check.yaml/badge.svg?branch=main)](https://github.com/saezlab/DOT/actions/workflows/R-CMD-check.yaml)
 [![GitHub issues](https://img.shields.io/github/issues/saezlab/DOT)](https://github.com/saezlab/DOT/issues)
 
 <!-- badges: end -->
