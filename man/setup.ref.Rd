@@ -29,3 +29,7 @@ A list containing the processed ref data.
 \description{
 Processing the reference single-cell data
 }
+\examples{
+data(dot.sample)
+dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
+}

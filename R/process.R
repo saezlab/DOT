@@ -1,4 +1,13 @@
+#' An internal method for aggregating ref data, sub-clustering and computing the centroids
+#' @param ref_data A cell x gene matrix of gene expressions.
+#' @param ref_annotations A character vector (one for each cell)
+#' @param cluster_size An integer. Maximum number of sub-clusters per sub-population
+#' @param th.inner_logfold log-fold threshold for selecting genes for sub-clustering
+#' @param verbose Boolean. Whether progress should be displayed.
+#' @return A list containing the processed ref data.
 #' @keywords internal
+#' @noRd
+#'
 aggregate_ref <- function(ref_data, ref_annotations, cluster_size, th.inner_logfold = 0.75, verbose = FALSE)
 {
   major_types <- sort(as.character(unique(ref_annotations)))
@@ -101,7 +110,15 @@ aggregate_ref <- function(ref_data, ref_annotations, cluster_size, th.inner_logf
               sub_centroids = sub_centroids, sub_ratios = sub_ratios))
 }
 
+#' An internal method for fast de gene analysis
+#' @param ref_centroids A cluster x gene matrix of gene expression centroids.
+#' @param ref_ratios Relative abundance of sub-populations
+#' @param max_genes Maximum number of genes to select
+#' @param verbose Boolean. Whether progress should be displayed.
+#' @return A list
 #' @keywords internal
+#' @noRd
+#'
 get_de_genes <- function(ref_centroids, ref_ratios, max_genes, verbose = FALSE)
 {
   Y_greedy <- NULL
@@ -139,8 +156,16 @@ get_de_genes <- function(ref_centroids, ref_ratios, max_genes, verbose = FALSE)
   return(list(de_genes = de_genes, Y = Y_greedy))
 }
 
+#' An internal method for computing the spatial neighborhood radius
+#' @param coordinates Coordinates of spots
+#' @param neighbors An internal parameter
+#' @param sample_size An internal parameter
+#' @param th.quantile An internal parameter
+#' @return A numeric value
 #' @keywords internal
-find_radius <- function(coordinates, neighbors = 8, sample_size = 2000, th.quantile = 0.99)
+#' @noRd
+#'
+find_radius <- function(coordinates, neighbors = 8, sample_size = 2000, th.quantile = 0.9)
 {
   N <- nrow(coordinates)
   if(N > sample_size)
@@ -164,8 +189,17 @@ find_radius <- function(coordinates, neighbors = 8, sample_size = 2000, th.quant
   return(radius)
 }
 
+#' An internal method for finding the set of spatial pairs
+#' @param nrm_X Normalized spot x gene counts
+#' @param coordinates Coordinates of spots
+#' @param radius Spatial radius. If 'auto' it's computed automatically
+#' @param neighbors An internal parameter
+#' @param th.quantile An internal parameter
+#' @return A list
 #' @keywords internal
-find_spatial_pairs <- function(nrm_X, coordinates, radius = "auto", neighbors = 8, th.quantile = 0.99)
+#' @noRd
+#'
+find_spatial_pairs <- function(nrm_X, coordinates, radius = "auto", neighbors = 8, th.quantile = 0.9)
 {
   # nrm_X is assumed to be normalized so that l2-norm of each row is 1
 
@@ -204,7 +238,16 @@ find_spatial_pairs <- function(nrm_X, coordinates, radius = "auto", neighbors = 
   return(list(pairs = srtp, radius = radius))
 }
 
+#' An internal method for finding the set of spatial/non-spatial pairs
+#' @param srt List containing data related to srt
+#' @param th.spatial Threshold on similarity of adjacent pairs
+#' @param th.nonspatial Threshold on similarity of non-adjacent pairs
+#' @param max_size Maximum number of pairs
+#' @param radius Spatial radius. If 'auto' it's computed automatically
+#' @return A list
 #' @keywords internal
+#' @noRd
+#'
 get_pairs <- function(srt, th.spatial, th.nonspatial, max_size, radius = 'auto')
 {
   nrm_X <- normalize(srt$X)
@@ -248,13 +291,36 @@ get_pairs <- function(srt, th.spatial, th.nonspatial, max_size, radius = 'auto')
   return(srtp)
 }
 
+#' An internal method filtering MT-like genes
+#' @param genes Vector of gene symbols
+#' @return A Boolean vector
 #' @keywords internal
+#' @noRd
+#'
 is_mt <- function(genes)
 {
   return(startsWith(genes, "MT-") | startsWith(genes, "HLA-") | startsWith(genes, "RPL"))
 }
 
-draw_maps <- function(spatial, weights, normalize = TRUE, ncol = 4, trans = NA,
+#' A plotting wrapper for drawing gene/abundance maps on tissue
+#' @param spatial Coordinates
+#' @param weights Weights to draw (spot x feature)
+#' @param normalize Whether weights should sum up to 1 for each spot
+#' @param ncol Number of columns in the grid
+#' @param trans Color transformation scale
+#' @param size Size of points
+#' @param shape Shape of points
+#' @param flip_y Whether y axis should be negated
+#' @param viridis_option Viridis color options
+#' @param legend_title Title of color legend
+#' @param background Background color of plot
+#' @return A ggplot object
+#' @export
+#'
+#' @examples
+#' data(dot.sample)
+#' draw_maps(dot.sample$srt$coordinates, t(as.matrix(dot.sample$srt$counts[1:8, ])), normalize = FALSE)
+draw_maps <- function(spatial, weights, normalize = TRUE, ncol = 4, trans = 'identity',
                       size = 0.5, shape = 19, flip_y = TRUE, viridis_option = "magma",
                       legend_title = "abundance", background = 'gray90')
 {
@@ -276,13 +342,9 @@ draw_maps <- function(spatial, weights, normalize = TRUE, ncol = 4, trans = NA,
   if(flip_y)
     plot_dt$y <- -plot_dt$y
   p <- ggplot2::ggplot(plot_dt, ggplot2::aes_string(x = "x", y = "y", color = "abundance"))+
-    ggplot2::geom_point(size =  size, shape = shape)
-
-  if(is.na(trans))
-    p <- p + ggplot2::scale_color_viridis_c(legend_title, option = viridis_option)
-  else
-    p <- p + ggplot2::scale_color_viridis_c(legend_title, option = viridis_option, trans = trans)
-  p <- p +  ggplot2::xlab("") + ggplot2::ylab("")+
+    ggplot2::geom_point(size =  size, shape = shape)+
+    ggplot2::scale_color_viridis_c(legend_title, option = viridis_option, trans = trans)+
+    ggplot2::xlab("") + ggplot2::ylab("")+
     ggplot2::theme(axis.text.x = ggplot2::element_blank(),
           axis.ticks.x = ggplot2::element_blank(),
           axis.text.y = ggplot2::element_blank(),

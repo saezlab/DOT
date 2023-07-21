@@ -4,7 +4,7 @@ l2 <- function(x) norm(x, type="2")
 #' @keywords internal
 fast_centroid <- function(X, ann, MARGIN = 1)
 {
-  if(is(X, "Matrix"))
+  if(methods::is(X, "Matrix"))
   {
     group <- as.factor(ann)
     group_mat <- Matrix::sparse.model.matrix(~ 0 + group, transpose = TRUE)
@@ -55,47 +55,24 @@ matrix_norm <- function(x, MARGIN)
 fast_sweep <- function(x, MARGIN, STATS, FUN)
 {
   return(sweep(x, MARGIN, STATS, FUN))
-
-  # if(!(FUN %in% c("*", "+", "/", "-")))
-  #   stop("Operator not supported")
-  #
-  # xs <- NULL
-  # if(FUN == "-")
-  # {
-  #   xs <- rcpp_sweep(x, MARGIN, -STATS, "+")
-  # }else if(FUN == "/")
-  # {
-  #   xs <- rcpp_sweep(x, MARGIN, 1/STATS, "*")
-  # }else
-  # {
-  #   xs <- rcpp_sweep(x, MARGIN, STATS, FUN)
-  # }
-  #
-  # if(!is.null(xs))
-  # {
-  #   dimnames(xs) <- dimnames(x)
-  # }
-  #
-  # return(xs)
 }
 
 #' @keywords internal
 normalize <- function(x, MARGIN = 1){
   x <- fast_sweep(x, MARGIN = MARGIN, matrix_norm(x, MARGIN), "/")
-
   x[which(!is.finite(x))] <- 0
 
   return(x)
 }
 
 #' @keywords internal
-e10 <- exp(-10)
+E10 <- exp(-10)
 
 #' @keywords internal
 Entropy <- Vectorize(function(y){
-  if(y < e10)
+  if(y < E10)
   {
-    return(-e10*10)
+    return(-E10*10)
   }else
   {
     return(y*log(y))
@@ -103,32 +80,11 @@ Entropy <- Vectorize(function(y){
 })
 
 #' @keywords internal
-softmin <- function(x, epsilon = 1e-2){
-  ex <- exp((max(x)-x)/epsilon)
-  return(ex/sum(ex))
-}
-
-#' @keywords internal
-softmin_safe <- function(x, epsilon){
-  s <- softmin(x, epsilon)
-  if(any(is.nan(s)))
-  {
-    ss <- which.max(x)
-    s[ss] <- 0
-    s[-ss] <- softmin_safe(x[-ss], epsilon)
-  }
-  return(s)
-}
-
-#' @keywords internal
-smallL = -20
-
-#' @keywords internal
 safelog2 <- function(x)
 {
   lg <- log2(x)
   lg[which(is.nan(lg))] <- 0
-  lg[which(is.infinite(lg))] <- smallL
+  lg[which(is.infinite(lg))] <- -20
   return(lg)
 }
 
@@ -143,70 +99,3 @@ ls_sol <- function(ref_X, srt_X, lambda = 10)
 
   return(t(Y))
 }
-
-# # @keywords internal
-# rcpp_sweep <- Rcpp::cppFunction('
-# NumericMatrix rcpp_sweep(NumericMatrix x, int MARGIN, NumericVector STATS, String FUN) {
-#   int n = x.nrow();
-#   int m = x.ncol();
-#   NumericMatrix out(n, m);
-#
-#   if(MARGIN == 1) {
-#     if(FUN == "+") {
-#       for(int i = 0; i < n; ++i)
-#         for (int j = 0; j < m; ++j)
-#           out(i,j) = x(i,j) + STATS[i];
-#     }
-#     else if(FUN == "*") {
-#       for(int i = 0; i < n; ++i)
-#         for (int j = 0; j < m; ++j)
-#           out(i,j) = x(i,j) * STATS[i];
-#     }
-#   }
-#   else if(MARGIN == 2) {
-#     if(FUN == "+") {
-#       for(int i = 0; i < n; ++i)
-#         for (int j = 0; j < m; ++j)
-#           out(i,j) = x(i,j) + STATS[j];
-#     }
-#     else if(FUN == "*") {
-#       for(int i = 0; i < n; ++i)
-#         for (int j = 0; j < m; ++j)
-#           out(i,j) = x(i,j) * STATS[j];
-#     }
-#   }
-#
-#   return out;
-# }
-# ')
-
-# matrix_norm <- Rcpp::cppFunction('
-# NumericVector matrix_norm(NumericMatrix x, int MARGIN) {
-#
-#   int n = x.nrow();
-#   int m = x.ncol();
-#
-#   if(MARGIN == 1){
-#     NumericVector nrm(n);
-#     for(int i = 0; i < n; ++i){
-#       double nr = 0;
-#       for (int j = 0; j < m; ++j)
-#         nr += x(i,j)*x(i,j);
-#       nrm[i] = sqrt(nr);
-#     }
-#
-#     return(nrm);
-#   }
-#   else{
-#     NumericVector nrm(m);
-#
-#     for(int j = 0; j < m; ++j){
-#       double nr = 0;
-#       for (int i = 0; i < n; ++i)
-#         nr += x(i,j)*x(i,j);
-#       nrm[j] = sqrt(nr);
-#     }
-#     return(nrm);
-#   }
-# }
-# ')

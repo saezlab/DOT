@@ -40,5 +40,5 @@ Processing the target spatial data
 }
 \examples{
 data(dot.sample)
-dot.srt <- setup.srt(srt_data = dot.sample$srt$counts, srt_coords = dot.sample$srt$coordinates)
+dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
 }

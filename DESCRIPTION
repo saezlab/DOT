@@ -10,18 +10,14 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
-    R (>= 2.10)
+    R (>= 4.0)
 LazyData: true
 Imports: 
-    anndata,
     fields,
     ggplot2,
-    magrittr,
     Matrix,
     methods,
-    Rcpp,
     Seurat,
-    sparseMatrixStats,
     stats,
     stringr
 Suggests: 

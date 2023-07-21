@@ -7,7 +7,7 @@
 The reference single-cell RNA seq sample comes from a similar region and contains 44 cell types.
 Both spatial and single-cell data are down-sampled to 500 genes in this example.}
 \format{
-An \code{"list"}
+A \code{"list"}
 }
 \usage{
 data(dot.sample)

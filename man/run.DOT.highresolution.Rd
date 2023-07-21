@@ -21,3 +21,11 @@ A DOT object with the produced results contained in the weights slot
 \description{
 A wrapper for running the DOT algorithm for high-resolution spatial data with suggested parameters
 }
+\examples{
+data(dot.sample)
+dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
+dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
+dot <- create.DOT(dot.srt, dot.ref)
+# No. iterations is reduced to 10 for this example (default is 100)
+dot <- run.DOT.highresolution(dot, iterations = 10)
+}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/dot.R
 \name{create.DOT}
 \alias{create.DOT}
-\title{Creating the DOT object based on the processed ref and srt data}
+\title{Creating a DOT object based on the processed ref and srt data}
 \usage{
 create.DOT(srt, ref, ls_solution = TRUE)
 }
@@ -17,5 +17,11 @@ create.DOT(srt, ref, ls_solution = TRUE)
 A DOT object ready to be fed to the algorithm
 }
 \description{
-Creating the DOT object based on the processed ref and srt data
+Creating a DOT object based on the processed ref and srt data
+}
+\examples{
+data(dot.sample)
+dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
+dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
+dot <- create.DOT(dot.srt, dot.ref)
 }

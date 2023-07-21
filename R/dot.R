@@ -1,5 +1,15 @@
+#' A class for either matrix or NULL data
+#' @export
 setClassUnion("matrixOrNULL", members=c("matrix", "NULL"))
 
+#' An S4 class to represent a bank account.
+#'
+#' @slot srt A list containing spatial data as processed by setup.srt
+#' @slot ref A list containing reference data as processed by setup.ref
+#' @slot weights A nullable matrix containing absolute abundance of categories
+#' @slot solution A nullable matrix containing raw solution
+#' @slot history A data.frame containing solution history
+#' @export
 Dot <- setClass("Dot", slots = list(srt = "list", ref = "list",
                                     weights = "matrixOrNULL", solution = "matrixOrNULL", history = "data.frame"))
 
@@ -13,10 +23,13 @@ Dot <- setClass("Dot", slots = list(srt = "list", ref = "list",
 #' @return A list containing the processed ref data.
 #' @export
 #'
+#' @examples
+#' data(dot.sample)
+#' dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
 setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10,
                       max_genes = 5000, verbose = FALSE)
 {
-  if(is(ref_data, "Seurat"))
+  if(methods::is(ref_data, "Seurat"))
   {
     if(is.null(ref_annotations))
     {
@@ -28,7 +41,7 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
 
     # cell x gene
     ref_data <- t(Seurat::GetAssayData(ref_data, slot = "counts"))
-  }else if(is(ref_data, "AnnDataR6"))
+  }else if(methods::is(ref_data, "AnnDataR6"))
   {
     if(is.null(ref_annotations))
     {
@@ -48,11 +61,11 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
 
     # X is already cell X gene in AnnData6
     ref_data <- ref_data$X
-  }else if(is(ref_data, "data.frame"))
+  }else if(methods::is(ref_data, "data.frame"))
   {
     # cell x gene
     ref_data <- t(as.matrix(ref_data))
-  }else if(is(ref_data, "matrix") | is(ref_data, "Matrix"))
+  }else if(methods::is(ref_data, "matrix") | methods::is(ref_data, "Matrix"))
   {
     # cell x gene
     ref_data <- t(ref_data)
@@ -64,7 +77,7 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
   if(is.null(ref_annotations))
     stop("Annotations must be supplied.")
 
-  if(is(ref_annotations, "data.frame") || is(ref_annotations, "matrix"))
+  if(methods::is(ref_annotations, "data.frame") || methods::is(ref_annotations, "matrix"))
   {
     if(ncol(ref_annotations) > 1)
     {
@@ -124,13 +137,14 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
 #' @param verbose Boolean. Whether progress should be displayed.
 #' @return A list containing the processed srt data.
 #' @export
+#'
 #' @examples
 #' data(dot.sample)
-#' dot.srt <- setup.srt(srt_data = dot.sample$srt$counts, srt_coords = dot.sample$srt$coordinates)
+#' dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
 setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspatial = 0,
                       th.gene.low = 0.01, th.gene.high = 0.99, radius = 'auto', verbose = FALSE)
 {
-  if(is(srt_data, "Seurat"))
+  if(methods::is(srt_data, "Seurat"))
   {
     if(is.null(srt_coords))
     {
@@ -142,7 +156,7 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
 
     # spot x gene
     srt_data <- t(Seurat::GetAssayData(srt_data, slot = "counts"))
-  }else if(is(srt_data, "AnnDataR6"))
+  }else if(methods::is(srt_data, "AnnDataR6"))
   {
     if(is.null(srt_coords))
     {
@@ -150,11 +164,11 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
     }
     # X is already spot X gene in AnnData6
     srt_data <- srt_data$X
-  }else if(is(srt_data, "data.frame"))
+  }else if(methods::is(srt_data, "data.frame"))
   {
     # spot x gene
     srt_data <- t(as.matrix(srt_data))
-  }else if(is(srt_data, "matrix") | is(srt_data, "Matrix"))
+  }else if(methods::is(srt_data, "matrix") | methods::is(srt_data, "Matrix"))
   {
     # spot x gene
     srt_data <- t(srt_data)
@@ -165,7 +179,7 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
 
   if(!is.null(srt_coords))
   {
-    if(!is(srt_coords, "data.frame") && !is(srt_coords, "matrix"))
+    if(!methods::is(srt_coords, "data.frame") && !methods::is(srt_coords, "matrix"))
       stop("Invalid coordinates supplied.")
 
     if(ncol(srt_coords) == 1)
@@ -211,7 +225,7 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
 }
 
 
-#' Creating the DOT object based on the processed ref and srt data
+#' Creating a DOT object based on the processed ref and srt data
 #'
 #' @param srt A list containing the processed srt data produced by setup.srt
 #' @param ref A list containing the processed ref data produced by setup.ref
@@ -219,6 +233,11 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
 #' @return A DOT object ready to be fed to the algorithm
 #' @export
 #'
+#' @examples
+#' data(dot.sample)
+#' dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
+#' dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
+#' dot <- create.DOT(dot.srt, dot.ref)
 create.DOT <- function(srt, ref, ls_solution = TRUE)
 {
   # Now both ref_data and srt_data must have genes for columns
@@ -251,12 +270,18 @@ create.DOT <- function(srt, ref, ls_solution = TRUE)
 #' @return A DOT object with the produced results contained in the weights slot
 #' @export
 #'
+#' @examples
+#' data(dot.sample)
+#' dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
+#' dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
+#' dot <- create.DOT(dot.srt, dot.ref)
+#' # No. iterations is reduced to 10 for this example (default is 100)
+#' dot <- run.DOT.highresolution(dot, iterations = 10)
 run.DOT.highresolution <- function(object, lambda_a = 0, iterations = 100, verbose = FALSE)
 {
   return(.run.DOT(object, lambda_a = lambda_a, sparsity_coef = 1,
                   max_size = 1, verbose = verbose, iterations = iterations))
 }
-
 
 
 #' A wrapper for running the DOT algorithm for low-resolution spatial data with suggested parameters
@@ -269,6 +294,13 @@ run.DOT.highresolution <- function(object, lambda_a = 0, iterations = 100, verbo
 #' @return A DOT object with the produced results contained in the weights slot
 #' @export
 #'
+#' @examples
+#' data(dot.sample)
+#' dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
+#' dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
+#' dot <- create.DOT(dot.srt, dot.ref)
+#' # No. iterations is reduced to 10 for this example (default is 100)
+#' dot <- run.DOT.lowresolution(dot, iterations = 10)
 run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iterations = 100, verbose = FALSE)
 {
   return(.run.DOT(object, lambda_a = lambda_a,
@@ -276,11 +308,27 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
                   verbose = verbose, iterations = iterations))
 }
 
+#' The internal DOT algorithm
+#'
+#' @param object A DOT object created using create.DOT().
+#' @param lambda_g Penalty weight for matching the gene maps
+#' @param lambda_c Penalty weight for matching the centroids
+#' @param lambda_i Penalty weight for matching the profile of spots
+#' @param lambda_s Penalty weight for matching spatial relations
+#' @param lambda_a Penalty weight for matching abundances
+#' @param sparsity_coef A value between 0 (mixed) and 1 (sparse)
+#' @param max_size An upper bound on the size of spots.
+#' @param min_size A lower bound on the size of spots.
+#' @param gap_threshold Upper bound on relative optimality gap
+#' @param iterations Integer. Maximum number of iterations of FW
+#' @param verbose Boolean. Whether progress should be displayed.
+#' @return A DOT object with the produced results contained in the weights slot
+#'
 #' @keywords internal
-.run.DOT <- function(object, lambda_g = 1, lambda_a = 1, lambda_s = 1, lambda_c = 1,
-                     sparsity_coef = 1, lambda_i = 1,
-                     iterations = 100, gap_threshold = 0.01,
-                     max_size = 20, min_size = 1, verbose = TRUE)
+#' @noRd
+.run.DOT <- function(object, lambda_g = 1, lambda_c = 1, lambda_i = 1, lambda_s = 1, lambda_a = 1,
+                     sparsity_coef = 1, max_size = 20, min_size = 1,
+                     iterations = 100, gap_threshold = 0.01, verbose = TRUE)
 {
   ST_X <- object@srt$X # S * G
 
@@ -310,11 +358,9 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
   }
 
   min_iterations <- min(10, iterations)
-  # gap_threshold <- 0.01
   marginal_improvement <- gap_threshold
   neighborhood_obj <- "JS"
   abundance_obj <- "JS"
-  # sqrtd <- FALSE
   lambda_e <- 0
   fit.genes <- FALSE
   sqrtd <- TRUE
@@ -327,7 +373,6 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
     epsilon <- 1e-1
 
   r_ST <- rep(0.9*min_size + 0.1*max_size, S)
-  # r_ST <- rep(1, S)
   if(!is.null(ST_sizes))
   {
     r_ST <- ST_sizes
@@ -365,7 +410,7 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
     pairs_w <- object@srt$P$w
   }
 
-  l_C <- lambda_c * S / C # ratio weights in obj are scaled such that theya add up to C
+  l_C <- lambda_c * S / C # ratio weights in obj are scaled such that they add up to C
   l_G <- lambda_g * S / G
 
   l_A <- lambda_a / max_size
@@ -437,11 +482,6 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
       Yt[, which(cs < 1e-3)] <- 1/C
 
       cs_factors <- rep(1, S)
-      # cs_high <- which(cs > max_size)
-      # cs_factors[cs_high] <- max_size / cs[cs_high]
-      # cs_low <- which(cs < 1 & cs >= 1e-3)
-      # cs_factors[cs_low] <- 1 / cs[cs_low]
-
       if(sparsity_coef > 0.5)
       {
         cs_high <- which(cs >= 1e-3)
