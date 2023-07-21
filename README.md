@@ -8,12 +8,12 @@
 
 ## Overview
 
-`DOT` is a method for transferring cell features from a reference single-cell RNA-seq data to spots/cells in spatial omics. It operates by optimizing a combination of multiple objectives using a Frank-Wolfe algorithm to produce a high quality transfer. Apart from transferring cell types/states to spatial omics, `DOT` can be used for transferring other relevant categorical or continuous phenotypes from one set of omics to another, such as estimating the expression of missinng genes or transferring transcription factor/pathway activities.
+`DOT` is a method for transferring cell features from a reference single-cell RNA-seq data to spots/cells in spatial omics. It operates by optimizing a combination of multiple objectives using a Frank-Wolfe algorithm to produce a high quality transfer. Apart from transferring cell types/states to spatial omics, `DOT` can be used for transferring other relevant categorical or continuous features from one set of omics to another, such as estimating the expression of missinng genes or transferring transcription factor/pathway activities.
 <p align="center" width="100%">
     <img src="figures/overview.png" align="center" width="65%">
 </p>
 
-For more information about how this package has been used with real data, please check the following links:
+For more information about how this package has been used with real data, please check the following link:
 
 - [DOT's general usage](articles/DOT.md)
 

@@ -6,7 +6,7 @@
 #'
 #' @usage data(dot.sample)
 #'
-#' @format An \code{"list"}
+#' @format A \code{"list"}
 #'
 #' @keywords datasets
 #'
