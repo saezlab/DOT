@@ -1,7 +1,19 @@
+#' A utility function for computing l2 of a vector
+#' @param x A vector
+#' @return A numeric value
 #' @keywords internal
+#' @noRd
+#'
 l2 <- function(x) norm(x, type="2")
 
+#' A utility function for computing row/column-wise means of a matrix
+#' @param X A numeric matrix
+#' @param ann A character vector
+#' @param MARGIN An integer (1 or 2)
+#' @return A matrix of centroids
 #' @keywords internal
+#' @noRd
+#'
 fast_centroid <- function(X, ann, MARGIN = 1)
 {
   if(methods::is(X, "Matrix"))
@@ -34,7 +46,13 @@ fast_centroid <- function(X, ann, MARGIN = 1)
   }
 }
 
+#' A utility function for computing absolute/relateive frequency of unique items in a vector
+#' @param vals A vector
+#' @param normalize Whether frequencies are relative
+#' @return A vector
 #' @keywords internal
+#' @noRd
+#'
 int.table <- function(vals, normalize = FALSE)
 {
   counts <- table(vals)
@@ -45,19 +63,39 @@ int.table <- function(vals, normalize = FALSE)
   return(counts)
 }
 
+#' A utility function for computing row/column-wise l2 norms of a matrix
+#' @param X A numeric matrix
+#' @param MARGIN An integer (1 or 2)
+#' @return A vector
 #' @keywords internal
+#' @noRd
+#'
 matrix_norm <- function(x, MARGIN)
 {
   return(apply(x, MARGIN, l2))
 }
 
+#' A wrapper for sweep
+#' @param x A numeric matrix
+#' @param MARGIN An integer (1 or 2)
+#' @param STATS A vector
+#' @param FUN A character representation of operator
+#' @return A matrix
 #' @keywords internal
+#' @noRd
+#'
 fast_sweep <- function(x, MARGIN, STATS, FUN)
 {
   return(sweep(x, MARGIN, STATS, FUN))
 }
 
+#' A utility function for row/column-wise normalization of a matrix
+#' @param x A numeric matrix
+#' @param MARGIN An integer (1 or 2)
+#' @return A matrix
 #' @keywords internal
+#' @noRd
+#'
 normalize <- function(x, MARGIN = 1){
   x <- fast_sweep(x, MARGIN = MARGIN, matrix_norm(x, MARGIN), "/")
   x[which(!is.finite(x))] <- 0
@@ -68,7 +106,12 @@ normalize <- function(x, MARGIN = 1){
 #' @keywords internal
 E10 <- exp(-10)
 
+#' A utility function for computing entropy of a vector
+#' @param y A numeric vector
+#' @return A vector
 #' @keywords internal
+#' @noRd
+#'
 Entropy <- Vectorize(function(y){
   if(y < E10)
   {
@@ -79,23 +122,16 @@ Entropy <- Vectorize(function(y){
   }
 })
 
+#' A utility function for safe log
+#' @param x A numeric vector
+#' @return A vector
 #' @keywords internal
+#' @noRd
+#'
 safelog2 <- function(x)
 {
   lg <- log2(x)
   lg[which(is.nan(lg))] <- 0
   lg[which(is.infinite(lg))] <- -20
   return(lg)
-}
-
-#' @keywords internal
-ls_sol <- function(ref_X, srt_X, lambda = 10)
-{
-  C <- nrow(ref_X)
-  Y <- solve((ref_X %*% t(ref_X)) + diag(lambda, C, C), ref_X %*% t(srt_X))
-  Y[which(Y < 0)] <- 0
-  rownames(Y) <- rownames(ref_X)
-  colnames(Y) <- rownames(srt_X)
-
-  return(t(Y))
 }

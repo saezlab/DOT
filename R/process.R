@@ -302,6 +302,26 @@ is_mt <- function(genes)
   return(startsWith(genes, "MT-") | startsWith(genes, "HLA-") | startsWith(genes, "RPL"))
 }
 
+#' An internal method for producing a LS solution
+#' @param ref_X A cell x gene matrix
+#' @param srt_X A spot x gene matrix
+#' @param lambda Ridge penalty weight
+#' @return A matrix
+#' @keywords internal
+#' @noRd
+#'
+ls_sol <- function(ref_X, srt_X, lambda = 10)
+{
+  C <- nrow(ref_X)
+  Y <- solve((ref_X %*% t(ref_X)) + diag(lambda, C, C), ref_X %*% t(srt_X))
+  Y[which(Y < 0)] <- 0
+  rownames(Y) <- rownames(ref_X)
+  colnames(Y) <- rownames(srt_X)
+
+  return(t(Y))
+}
+
+
 #' A plotting wrapper for drawing gene/abundance maps on tissue
 #' @param spatial Coordinates
 #' @param weights Weights to draw (spot x feature)
