@@ -22,8 +22,7 @@ For more information about how this package has been used with real data, please
 # Installation
 `DOT` is an R package which you can install from [GitHub](https://github.com/) with:
 
-```{r github_install, eval=FALSE}
-library(devtools)
+```r
 devtools::install_github("saezlab/DOT")
 ```
 
