@@ -4,9 +4,9 @@
 \name{Dot-class}
 \alias{Dot-class}
 \alias{Dot}
-\title{An S4 class to represent a bank account.}
+\title{An S4 class to represent a DOT object.}
 \description{
-An S4 class to represent a bank account.
+An S4 class to represent a DOT object.
 }
 \section{Slots}{
 

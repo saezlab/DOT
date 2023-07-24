@@ -1,5 +1,5 @@
 Package: DOT
-Title: DOT: A flexible multi-objective optimization framework for transferring features across single-cell and spatial omics
+Title: A flexible multi-objective optimization framework for transferring features across single-cell and spatial omics
 Version: 0.0.0.9000
 Authors@R: 
     person("Arezou", "Rahimi", , "arezou.rahimi@uni-heidelberg.de", role = c("aut", "cre"),
@@ -25,3 +25,4 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+URL: https://saezlab.github.io/DOT/

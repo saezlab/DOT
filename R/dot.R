@@ -2,7 +2,7 @@
 #' @export
 setClassUnion("matrixOrNULL", members=c("matrix", "NULL"))
 
-#' An S4 class to represent a bank account.
+#' An S4 class to represent a DOT object.
 #'
 #' @slot srt A list containing spatial data as processed by setup.srt
 #' @slot ref A list containing reference data as processed by setup.ref
