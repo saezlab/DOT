@@ -5,3 +5,6 @@ template:
   bslib:
     pkgdown-nav-height: 100px
 
+home:
+  sidebar:
+    structure: [license, citation, authors, dev]
