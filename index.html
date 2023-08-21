@@ -73,13 +73,27 @@
 <li><a href="https://saezlab.github.io/DOT/articles/general.html">DOT’s general usage</a></li>
 </ul>
 </div>
-</div>
-<div class="section level1">
-<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h1>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p><code>DOT</code> is an R package which you can install from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"saezlab/DOT"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
+</h2>
+<ul>
+<li>R (&gt;= 4.0)</li>
+<li>R packages: fields, ggplot2, Matrix, methods, Seurat, stats, stringr</li>
+</ul>
+<p>For optimal performance, we recommend at least 4 GB of RAM. For large instances higher memory may be required.</p>
+<p>Installation takes less than five minutes. The sample dataset provided can be run in less than a minute on a personal computer. DOT takes approximately 10 minutes to process a MERFISH MOp dataset with approximately 250 genes, 100 cell types and 4,000 spots.</p>
+<p>Operating systems (version 2.0 spacexr) tested on:</p>
+<ul>
+<li>macOS Monterey 12.4</li>
+</ul>
+</div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
@@ -89,7 +103,6 @@
 </blockquote>
 </div>
 </div>
-
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
