@@ -33,7 +33,7 @@ devtools::install_github("saezlab/DOT")
 
 For optimal performance on moderately sized instances, we recommend at least 4 GB of RAM. For large reference scRNA-seq data or very large spatial instances higher memory may be required.
 
-Installation takes less than five minutes. The sample dataset provided can be run in less than a minute on a ``normal'' desktop computer. DOT takes approximately 7 minutes to process a MERFISH MOp dataset with approximately 250 genes, 100 cell types and 4,000 spots.
+Installation takes less than five minutes. The sample dataset provided can be run in less than a minute on a "normal"" desktop computer. DOT takes approximately 7 minutes to process a MERFISH MOp dataset with approximately 250 genes, 100 cell types and 4,000 spots.
 
 Operating system tested on: macOS Monterey 12.4
 
