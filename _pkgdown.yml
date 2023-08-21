@@ -1,7 +1,7 @@
 url: https://saezlab.github.io/DOT/
 template:
   bootstrap: 5
-  bootswatch: yeti
+  bootswatch: minty
   bslib:
     pkgdown-nav-height: 100px
 

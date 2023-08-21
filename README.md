@@ -15,16 +15,27 @@
     <img src="man/figures/overview.png" align="center" width="65%">
 </p>
 
-For more information about how this package has been used with real data, please check the following link:
+For more information about how this package has been used with real data and expected outputs, please check the following link:
 
 - [DOT's general usage](https://saezlab.github.io/DOT/articles/general.html)
 
-# Installation
+## Installation
 `DOT` is an R package which you can install from [GitHub](https://github.com/) with:
 
 ```r
 devtools::install_github("saezlab/DOT")
 ```
+
+## Dependencies
+
+-   R (>= 4.0)
+-   R packages: fields, ggplot2, Matrix, methods, Seurat, stats, stringr
+
+For optimal performance on moderately sized instances, we recommend at least 4 GB of RAM. For large reference scRNA-seq data or very large spatial instances higher memory may be required.
+
+Installation takes less than five minutes. The sample dataset provided can be run in less than a minute on a ``normal'' desktop computer. DOT takes approximately 7 minutes to process a MERFISH MOp dataset with approximately 250 genes, 100 cell types and 4,000 spots.
+
+Operating system tested on: macOS Monterey 12.4
 
 ## Citation
 If you use **DOT** for your research please cite the [following preprint](https://arxiv.org/abs/2301.01682): 
