@@ -15,10 +15,11 @@ Dot <- setClass("Dot", slots = list(srt = "list", ref = "list",
 
 #' Processing the reference single-cell data
 #'
-#' @param ref_data A gene x cell matrix of gene expressions. Can be a matrix-like object or a Seurat/AnnData object
+#' @param ref_data A gene x cell matrix of gene expressions. Can be a matrix-like object or a Seurat/AnnData object.
 #' @param ref_annotations A character vector (one for each cell) or a single vector pointing to the slot in the Seurat/AnnData object
-#' @param ref_subcluster_size An integer. Maximum number of sub-clusters per sub-population
-#' @param max_genes An integer. Maximum number of genes to pick
+#' @param ref_subcluster_size An integer. Maximum number of sub-clusters per sub-population.
+#' @param max_genes An integer. Maximum number of genes to pick.
+#' @param remove_mt Boolean. Whether mitochondrial genes must be removed.
 #' @param verbose Boolean. Whether progress should be displayed.
 #' @return A list containing the processed ref data.
 #' @export
@@ -27,7 +28,7 @@ Dot <- setClass("Dot", slots = list(srt = "list", ref = "list",
 #' data(dot.sample)
 #' dot.ref <- setup.ref(dot.sample$ref$counts[, 1:1000], dot.sample$ref$labels[1:1000], 2)
 setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10,
-                      max_genes = 5000, verbose = FALSE)
+                      max_genes = 5000, remove_mt = TRUE, verbose = FALSE)
 {
   if(methods::is(ref_data, "Seurat"))
   {
@@ -91,9 +92,11 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
   if(verbose)
     message("Pre-processing")
 
-  mt <- is_mt(colnames(ref_data))
-
-  ref_data <- ref_data[, which(!mt)]
+  if(remove_mt)
+  {
+    mt <- is_mt(colnames(ref_data))
+    ref_data <- ref_data[, which(!mt)]
+  }
 
   vg_genes <- max(5000, max_genes)
   if(ncol(ref_data) > vg_genes)
