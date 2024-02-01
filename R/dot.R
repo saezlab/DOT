@@ -89,6 +89,11 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
 
   ref_annotations <- as.character(ref_annotations)
 
+  if(length(ref_annotations) != nrow(ref_data))
+  {
+    stop("Inconsistent number of annotations and cells in the reference data.")
+  }
+
   if(verbose)
     message("Pre-processing")
 
@@ -102,7 +107,12 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
   if(ncol(ref_data) > vg_genes)
   {
     vg <- Seurat::FindVariableFeatures(t(ref_data))
-    vg <- rownames(vg)[order(vg$vst.variance.standardized, decreasing = TRUE)[1:vg_genes]]
+    if("vst.variance.standardized" %in% colnames(vg))
+    {
+      vg <- rownames(vg)[order(vg$vst.variance.standardized, decreasing = TRUE)[1:vg_genes]]
+    }else{
+      vg <- rownames(vg)[order(vg$variance.standardized, decreasing = TRUE)[1:vg_genes]]
+    }
 
     ref_data <- ref_data[, vg]
 
@@ -110,6 +120,13 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
   }
 
   gc()
+
+  nonempty_cells <- which(rowSums(ref_data) > 0)
+  if(length(nonempty_cells) < nrow(ref_data))
+  {
+    ref_data <- ref_data[nonempty_cells, ]
+    ref_annotations <- ref_annotations[nonempty_cells]
+  }
 
   if(verbose)
     message("Aggregating")
@@ -186,6 +203,9 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
       stop("Invalid coordinates supplied.")
 
     if(ncol(srt_coords) == 1)
+      stop("Invalid coordinates supplied.")
+
+    if(nrow(srt_coords) != nrow(srt_data))
       stop("Invalid coordinates supplied.")
 
     if(all(c("x", "y") %in% colnames(srt_coords)))
