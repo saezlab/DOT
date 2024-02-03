@@ -50,7 +50,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run.DOT.lowresolution</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  lambda_a <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  ratios_weight <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  max_spot_size <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  iterations <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -63,12 +63,12 @@
 <dd><p>A DOT object created using create.DOT().</p></dd>
 
 
-<dt>lambda_a</dt>
+<dt>ratios_weight</dt>
 <dd><p>A value between 0 and 1 for matching ratio of cell types</p></dd>
 
 
 <dt>max_spot_size</dt>
-<dd><p>An upper bound on the size of spots.</p></dd>
+<dd><p>An upper bound on the size of spots. Default is 20, can be set to a higher value for lower resolution (eg, 200 for ST).</p></dd>
 
 
 <dt>iterations</dt>

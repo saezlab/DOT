@@ -48,7 +48,12 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run.DOT.highresolution</span><span class="op">(</span><span class="va">object</span>, lambda_a <span class="op">=</span> <span class="fl">0</span>, iterations <span class="op">=</span> <span class="fl">100</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run.DOT.highresolution</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  ratios_weight <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  iterations <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -57,7 +62,7 @@
 <dd><p>A DOT object created using create.DOT().</p></dd>
 
 
-<dt>lambda_a</dt>
+<dt>ratios_weight</dt>
 <dd><p>A value between 0 and 1 for matching ratio of cell types</p></dd>
 
 

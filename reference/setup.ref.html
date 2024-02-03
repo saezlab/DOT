@@ -53,6 +53,7 @@
 <span>  ref_annotations <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref_subcluster_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  max_genes <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>  remove_mt <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -60,7 +61,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>ref_data</dt>
-<dd><p>A gene x cell matrix of gene expressions. Can be a matrix-like object or a Seurat/AnnData object</p></dd>
+<dd><p>A gene x cell matrix of gene expressions. Can be a matrix-like object or a Seurat/AnnData object.</p></dd>
 
 
 <dt>ref_annotations</dt>
@@ -68,11 +69,15 @@
 
 
 <dt>ref_subcluster_size</dt>
-<dd><p>An integer. Maximum number of sub-clusters per sub-population</p></dd>
+<dd><p>An integer. Maximum number of sub-clusters per sub-population.</p></dd>
 
 
 <dt>max_genes</dt>
-<dd><p>An integer. Maximum number of genes to pick</p></dd>
+<dd><p>An integer. Maximum number of genes to pick.</p></dd>
+
+
+<dt>remove_mt</dt>
+<dd><p>Boolean. Whether mitochondrial genes must be removed.</p></dd>
 
 
 <dt>verbose</dt>

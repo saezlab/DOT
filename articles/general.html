@@ -65,7 +65,7 @@
                         <h4 data-toc-skip class="author">Arezou
 Rahimi</h4>
                         
-            <h4 data-toc-skip class="date">2024-02-01</h4>
+            <h4 data-toc-skip class="date">2024-02-03</h4>
       
       
       <div class="d-none name"><code>general.Rmd</code></div>
@@ -163,7 +163,7 @@ explicitly.</p>
 <p>We are now ready to perform decomposition:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run.DOT.lowresolution.html">run.DOT.lowresolution</a></span><span class="op">(</span><span class="va">dot</span>,  <span class="co"># The DOT object created above</span></span>
-<span>                             lambda_a <span class="op">=</span> <span class="fl">0</span>,       <span class="co"># Abundance weight; a larger value more closely matches the abundance of cell types in the spatial data to those in the reference data</span></span>
+<span>                             ratios_weight <span class="op">=</span> <span class="fl">0</span>,       <span class="co"># Abundance weight; a larger value more closely matches the abundance of cell types in the spatial data to those in the reference data</span></span>
 <span>                             max_spot_size <span class="op">=</span> <span class="fl">20</span>, <span class="co"># Maximum size of spots (20 is usually sufficiently large for Visium slides) </span></span>
 <span>                             verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
