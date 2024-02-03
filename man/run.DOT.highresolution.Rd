@@ -4,12 +4,17 @@
 \alias{run.DOT.highresolution}
 \title{A wrapper for running the DOT algorithm for high-resolution spatial data with suggested parameters}
 \usage{
-run.DOT.highresolution(object, lambda_a = 0, iterations = 100, verbose = FALSE)
+run.DOT.highresolution(
+  object,
+  ratios_weight = 0,
+  iterations = 100,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{object}{A DOT object created using create.DOT().}
 
-\item{lambda_a}{A value between 0 and 1 for matching ratio of cell types}
+\item{ratios_weight}{A value between 0 and 1 for matching ratio of cell types}
 
 \item{iterations}{Integer. Maximum number of iterations of FW}
 

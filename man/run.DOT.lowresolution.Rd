@@ -6,7 +6,7 @@
 \usage{
 run.DOT.lowresolution(
   object,
-  lambda_a = 0,
+  ratios_weight = 0,
   max_spot_size = 20,
   iterations = 100,
   verbose = FALSE
@@ -15,9 +15,9 @@ run.DOT.lowresolution(
 \arguments{
 \item{object}{A DOT object created using create.DOT().}
 
-\item{lambda_a}{A value between 0 and 1 for matching ratio of cell types}
+\item{ratios_weight}{A value between 0 and 1 for matching ratio of cell types}
 
-\item{max_spot_size}{An upper bound on the size of spots.}
+\item{max_spot_size}{An upper bound on the size of spots. Default is 20, can be set to a higher value for lower resolution (eg, 200 for ST).}
 
 \item{iterations}{Integer. Maximum number of iterations of FW}
 

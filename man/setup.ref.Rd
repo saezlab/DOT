@@ -9,17 +9,20 @@ setup.ref(
   ref_annotations = NULL,
   ref_subcluster_size = 10,
   max_genes = 5000,
+  remove_mt = TRUE,
   verbose = FALSE
 )
 }
 \arguments{
-\item{ref_data}{A gene x cell matrix of gene expressions. Can be a matrix-like object or a Seurat/AnnData object}
+\item{ref_data}{A gene x cell matrix of gene expressions. Can be a matrix-like object or a Seurat/AnnData object.}
 
 \item{ref_annotations}{A character vector (one for each cell) or a single vector pointing to the slot in the Seurat/AnnData object}
 
-\item{ref_subcluster_size}{An integer. Maximum number of sub-clusters per sub-population}
+\item{ref_subcluster_size}{An integer. Maximum number of sub-clusters per sub-population.}
 
-\item{max_genes}{An integer. Maximum number of genes to pick}
+\item{max_genes}{An integer. Maximum number of genes to pick.}
+
+\item{remove_mt}{Boolean. Whether mitochondrial genes must be removed.}
 
 \item{verbose}{Boolean. Whether progress should be displayed.}
 }

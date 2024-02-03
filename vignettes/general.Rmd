@@ -88,7 +88,7 @@ dot <- create.DOT(dot.srt, dot.ref)
 We are now ready to perform decomposition:
 ```{r}
 dot <- run.DOT.lowresolution(dot,  # The DOT object created above
-                             lambda_a = 0,       # Abundance weight; a larger value more closely matches the abundance of cell types in the spatial data to those in the reference data
+                             ratios_weight = 0,       # Abundance weight; a larger value more closely matches the abundance of cell types in the spatial data to those in the reference data
                              max_spot_size = 20, # Maximum size of spots (20 is usually sufficiently large for Visium slides) 
                              verbose = FALSE)
 

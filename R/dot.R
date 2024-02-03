@@ -1,17 +1,13 @@
-#' A class for either matrix or NULL data
-#' @export
-setClassUnion("matrixOrNULL", members=c("matrix", "NULL"))
-
 #' An S4 class to represent a DOT object.
 #'
 #' @slot srt A list containing spatial data as processed by setup.srt
 #' @slot ref A list containing reference data as processed by setup.ref
-#' @slot weights A nullable matrix containing absolute abundance of categories
-#' @slot solution A nullable matrix containing raw solution
+#' @slot weights A matrix containing absolute abundance of categories
+#' @slot solution A matrix containing raw solution
 #' @slot history A data.frame containing solution history
 #' @export
 Dot <- setClass("Dot", slots = list(srt = "list", ref = "list",
-                                    weights = "matrixOrNULL", solution = "matrixOrNULL", history = "data.frame"))
+                                    weights = "matrix", solution = "matrix", history = "data.frame"))
 
 #' Processing the reference single-cell data
 #'
@@ -153,6 +149,7 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
 #' @param th.nonspatial A value between 0 and 1. Threshold on similarity of non-adjacent spots
 #' @param th.gene.low Minimum percentage of spots that a valid gene must be expressed in.
 #' @param th.gene.high Maximum percentage of spots that a valid gene must be expressed in.
+#' @param remove_mt Boolean. Whether mitochondrial genes must be removed.
 #' @param radius Adjacency radius. If set to 'auto' it is computed using the coordinates of spots
 #' @param verbose Boolean. Whether progress should be displayed.
 #' @return A list containing the processed srt data.
@@ -162,7 +159,7 @@ setup.ref <- function(ref_data, ref_annotations = NULL, ref_subcluster_size = 10
 #' data(dot.sample)
 #' dot.srt <- setup.srt(dot.sample$srt$counts, dot.sample$srt$coordinates)
 setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspatial = 0,
-                      th.gene.low = 0.01, th.gene.high = 0.99, radius = 'auto', verbose = FALSE)
+                      th.gene.low = 0.01, th.gene.high = 0.99, remove_mt = TRUE, radius = 'auto', verbose = FALSE)
 {
   if(methods::is(srt_data, "Seurat"))
   {
@@ -224,8 +221,11 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
     colnames(srt_coords) <- c("x", "y")
   }
 
-  mt <- is_mt(colnames(srt_data))
-  srt_data <- as.matrix(srt_data[, which(!mt)])
+  if(remove_mt)
+  {
+    mt <- is_mt(colnames(srt_data))
+    srt_data <- as.matrix(srt_data[, which(!mt)])
+  }
 
   if(th.gene.high < 1 | th.gene.low > 0)
   {
@@ -239,7 +239,7 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
 
   if(th.spatial > 0)
   {
-    s$P <- get_pairs(s, th.spatial, th.nonspatial, nrow(s$X))
+    s$P <- get_pairs(s, th.spatial, th.nonspatial, nrow(s$X), verbose = verbose)
   }
 
   gc()
@@ -274,20 +274,20 @@ create.DOT <- function(srt, ref, ls_solution = TRUE)
   srt$X <- as.matrix(srt$X[, cg])
   ref$X <- ref$X[, cg]
 
-  initial_Y <- NULL
+  initial_Y <- matrix(0, 0, 0)
   if(ls_solution)
   {
     initial_Y <- ls_sol(ref$X, srt$X, lambda = 100)
   }
 
-  return(Dot(ref = ref, srt = srt, solution = initial_Y))
+  return(Dot(ref = ref, srt = srt, solution = initial_Y, weights = matrix(0, 0, 0)))
 }
 
 
 #' A wrapper for running the DOT algorithm for high-resolution spatial data with suggested parameters
 #'
 #' @param object A DOT object created using create.DOT().
-#' @param lambda_a A value between 0 and 1 for matching ratio of cell types
+#' @param ratios_weight A value between 0 and 1 for matching ratio of cell types
 #' @param iterations Integer. Maximum number of iterations of FW
 #' @param verbose Boolean. Whether progress should be displayed.
 #' @return A DOT object with the produced results contained in the weights slot
@@ -300,18 +300,18 @@ create.DOT <- function(srt, ref, ls_solution = TRUE)
 #' dot <- create.DOT(dot.srt, dot.ref)
 #' # No. iterations is reduced to 10 for this example (default is 100)
 #' dot <- run.DOT.highresolution(dot, iterations = 10)
-run.DOT.highresolution <- function(object, lambda_a = 0, iterations = 100, verbose = FALSE)
+run.DOT.highresolution <- function(object, ratios_weight = 0, iterations = 100, verbose = FALSE)
 {
-  return(.run.DOT(object, lambda_a = lambda_a, sparsity_coef = 1,
-                  max_size = 1, verbose = verbose, iterations = iterations))
+  return(.run.DOT(object, ratios_weight = ratios_weight,
+                  sparsity_coef = 0.6, max_size = 1, verbose = verbose, iterations = iterations))
 }
 
 
 #' A wrapper for running the DOT algorithm for low-resolution spatial data with suggested parameters
 #'
 #' @param object A DOT object created using create.DOT().
-#' @param lambda_a A value between 0 and 1 for matching ratio of cell types
-#' @param max_spot_size An upper bound on the size of spots.
+#' @param ratios_weight A value between 0 and 1 for matching ratio of cell types
+#' @param max_spot_size An upper bound on the size of spots. Default is 20, can be set to a higher value for lower resolution (eg, 200 for ST).
 #' @param iterations Integer. Maximum number of iterations of FW
 #' @param verbose Boolean. Whether progress should be displayed.
 #' @return A DOT object with the produced results contained in the weights slot
@@ -324,21 +324,18 @@ run.DOT.highresolution <- function(object, lambda_a = 0, iterations = 100, verbo
 #' dot <- create.DOT(dot.srt, dot.ref)
 #' # No. iterations is reduced to 10 for this example (default is 100)
 #' dot <- run.DOT.lowresolution(dot, iterations = 10)
-run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iterations = 100, verbose = FALSE)
+run.DOT.lowresolution <- function(object, ratios_weight = 0,
+                                  max_spot_size = 20, iterations = 100, verbose = FALSE)
 {
-  return(.run.DOT(object, lambda_a = lambda_a,
-                  max_size = max_spot_size, sparsity_coef = 0.5,
+  return(.run.DOT(object, ratios_weight = ratios_weight,
+                  max_size = max_spot_size, sparsity_coef = 0.4,
                   verbose = verbose, iterations = iterations))
 }
 
 #' The internal DOT algorithm
 #'
 #' @param object A DOT object created using create.DOT().
-#' @param lambda_g Penalty weight for matching the gene maps
-#' @param lambda_c Penalty weight for matching the centroids
-#' @param lambda_i Penalty weight for matching the profile of spots
-#' @param lambda_s Penalty weight for matching spatial relations
-#' @param lambda_a Penalty weight for matching abundances
+#' @param ratios_weight Penalty weight for matching abundances
 #' @param sparsity_coef A value between 0 (mixed) and 1 (sparse)
 #' @param max_size An upper bound on the size of spots.
 #' @param min_size A lower bound on the size of spots.
@@ -349,9 +346,9 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
 #'
 #' @keywords internal
 #' @noRd
-.run.DOT <- function(object, lambda_g = 1, lambda_c = 1, lambda_i = 1, lambda_s = 1, lambda_a = 1,
-                     sparsity_coef = 1, max_size = 20, min_size = 1,
-                     iterations = 100, gap_threshold = 0.01, verbose = TRUE)
+#'
+.run.DOT <- function(object, ratios_weight = 1, sparsity_coef = 1, max_size = 20, min_size = 1,
+                     iterations = 100, gap_threshold = 0.01, verbose = TRUE, ...)
 {
   ST_X <- object@srt$X # S * G
 
@@ -369,7 +366,7 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
   SC_ratios <- object@ref$R # K
 
   G <- ncol(ST_X)
-  if(G != ncol(SC_X)) #we want the same number of genes for SC_X and ST_X
+  if(G != ncol(SC_X))
     stop("Invalid arguments")
 
   S <- nrow(ST_X)
@@ -407,7 +404,7 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
   {
     SC_ratios <- rep(1/K, K)
     names(SC_ratios) <- names(SC_clusters)
-    lambda_a <- 0 #cannot penalize abundance if ratios are not available
+    ratios_weight <- 0 #cannot penalize abundance if ratios are not available
   }
 
   SC_ratios <- SC_ratios/sum(SC_ratios)
@@ -421,24 +418,38 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
   }
   w_SC <- w_SC / sum(w_SC) * C
 
+  arguments <- list(...)
+  inner_params <- arguments[["inner_params"]]
+
+  if(is.null(inner_params))
+  {
+    inner_params <- c(1, 0.25, 0, 0.01)
+
+    if(max_size == 1)
+      inner_params[2] <- 1
+  }else if(length(inner_params) < 4)
+  {
+    inner_params <- c(inner_params, rep(0, 4-length(inner_params)))
+  }
+
+  l_A <- ratios_weight / max_size
+  l_E <- lambda_e * n_ST
+  l_G <- inner_params[1] * S / G
+  l_I <- inner_params[2]
+  l_sp <- l_I * sparsity_coef / max_size
+  l_C <- inner_params[3] * S / C
+
   if(is.null(object@srt$P))
   {
     l_S <- 0
   }else
   {
-    l_S <- lambda_s * S / (max_size* nrow(object@srt$P))
+    l_S <- inner_params[4] * S / (max_size* nrow(object@srt$P))
 
     pairs_i <- object@srt$P$i
     pairs_j <- object@srt$P$j
     pairs_w <- object@srt$P$w
   }
-
-  l_C <- lambda_c * S / C # ratio weights in obj are scaled such that they add up to C
-  l_G <- lambda_g * S / G
-
-  l_A <- lambda_a / max_size
-  l_E <- lambda_e * n_ST
-  l_sp <- lambda_i * sparsity_coef / max_size # sparsity
 
   if(l_G > 0)
   {
@@ -487,12 +498,12 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
     sparsity_coef <- 0
     l_sp <- 0
 
-    if(lambda_i == 0)
-      lambda_i <- 1
+    if(l_I == 0)
+      l_I <- 1
   }
 
   Yt <- NULL
-  if(!is.null(object@solution))
+  if(nrow(object@solution) > 0)
   {
     Yt <- t(object@solution)
     if(nrow(Yt) != C | ncol(Yt) != S)
@@ -606,13 +617,13 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
 
     dcosine_ST <- 0
     dcosine_G <- 0
-    if((sparsity_coef < 1 & lambda_i > 0) | l_G > 0 | fit.genes)
+    if((sparsity_coef < 1 & l_I > 0) | l_G > 0 | fit.genes)
     {
       ST_Xt <- t(Yt) %*% SC_X
 
       ST_De <- NULL
 
-      if((sparsity_coef < 1 & lambda_i > 0 ) | fit.genes)
+      if((sparsity_coef < 1 & l_I > 0 ) | fit.genes)
       {
         ST_Xt_inorms <- matrix_norm(ST_Xt, 1) #apply(ST_Xt, 1, l2)
 
@@ -637,9 +648,9 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
 
         dcosine_ST <- sum(di)
 
-        if(sparsity_coef < 1 & lambda_i > 0)
+        if(sparsity_coef < 1 & l_I > 0)
         {
-          ST_De <- lambda_i*(1-sparsity_coef)*fast_sweep(ST_Xn - fast_sweep(ST_Xt_n, 1, csi, "*"), 1, d_i_grad/ST_Xt_inorms, "*")
+          ST_De <- l_I*(1-sparsity_coef)*fast_sweep(ST_Xn - fast_sweep(ST_Xt_n, 1, csi, "*"), 1, d_i_grad/ST_Xt_inorms, "*")
         }
 
         if(fit.genes)
@@ -806,7 +817,7 @@ run.DOT.lowresolution <- function(object, lambda_a = 0, max_spot_size = 20, iter
 
     Y_diff <- Yt - Yt_h
 
-    ft <- lambda_i*(1-sparsity_coef)*dcosine_ST + l_sp*dcosine_Lin + l_C*dcosine_SC + l_G*dcosine_G +
+    ft <- l_I*(1-sparsity_coef)*dcosine_ST + l_sp*dcosine_Lin + l_C*dcosine_SC + l_G*dcosine_G +
       l_S*d_S + l_A*ratio_error + l_E*ratio_equity_error
 
     #gap:

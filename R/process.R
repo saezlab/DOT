@@ -248,7 +248,7 @@ find_spatial_pairs <- function(nrm_X, coordinates, radius = "auto", neighbors = 
 #' @keywords internal
 #' @noRd
 #'
-get_pairs <- function(srt, th.spatial, th.nonspatial, max_size, radius = 'auto')
+get_pairs <- function(srt, th.spatial, th.nonspatial, max_size, radius = 'auto', verbose = FALSE)
 {
   nrm_X <- normalize(srt$X)
   srtp_info <- find_spatial_pairs(nrm_X, srt$C, radius = radius, th.quantile = 0.9)
@@ -282,7 +282,7 @@ get_pairs <- function(srt, th.spatial, th.nonspatial, max_size, radius = 'auto')
     srtp <- rbind(srtp, extra_pairs)
   }
 
-  if(nrow(srtp) == 0)
+  if(nrow(srtp) == 0 & verbose)
   {
     message("No pairs satisfied the thresholds.")
     srtp <- NULL

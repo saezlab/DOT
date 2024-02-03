@@ -15,9 +15,9 @@ An S4 class to represent a DOT object.
 
 \item{\code{ref}}{A list containing reference data as processed by setup.ref}
 
-\item{\code{weights}}{A nullable matrix containing absolute abundance of categories}
+\item{\code{weights}}{A matrix containing absolute abundance of categories}
 
-\item{\code{solution}}{A nullable matrix containing raw solution}
+\item{\code{solution}}{A matrix containing raw solution}
 
 \item{\code{history}}{A data.frame containing solution history}
 }}
