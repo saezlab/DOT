@@ -13,14 +13,14 @@
 
 <p align="center" width="100%">
   <img src="man/figures/overview.png" align="center" width="65%">
-    </p>
+</p>
     
-    For more information about how this package has been used with real data and expected outputs, please check the following link:
+For more information about how this package has been used with real data and expected outputs, please check the following link:
     
-    - [DOT's general usage](https://saezlab.github.io/DOT/articles/general.html)
+- [DOT's general usage](https://saezlab.github.io/DOT/articles/general.html)
 
 ## Installation
-`DOT` is an R package which you can install from [GitHub](https://github.com/) with:
+`DOT` is available under the R package `DOTr` which you can install from [GitHub](https://github.com/) with:
 
 ```r
 devtools::install_github("saezlab/DOT")

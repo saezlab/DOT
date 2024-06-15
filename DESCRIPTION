@@ -1,4 +1,4 @@
-Package: DOT
+Package: DOTr
 Title: A flexible multi-objective optimization framework for transferring features across single-cell and spatial omics
 Version: 0.0.0.9000
 Authors@R: 
