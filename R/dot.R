@@ -239,7 +239,7 @@ setup.srt <- function(srt_data, srt_coords = NULL, th.spatial = 0.84, th.nonspat
 
   if(th.spatial > 0)
   {
-    s$P <- get_pairs(s, th.spatial, th.nonspatial, nrow(s$X), verbose = verbose)
+    s$P <- get_pairs(s, th.spatial, th.nonspatial, nrow(s$X), radius = radius, verbose = verbose)
   }
 
   gc()
@@ -439,7 +439,7 @@ run.DOT.lowresolution <- function(object, ratios_weight = 0,
   l_sp <- l_I * sparsity_coef / max_size
   l_C <- inner_params[3] * S / C
 
-  if(is.null(object@srt$P))
+  if(is.null(object@srt$P) || nrow(object@srt$P) == 0)
   {
     l_S <- 0
   }else

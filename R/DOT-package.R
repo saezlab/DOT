@@ -2,6 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom FNN get.knn
 #' @importFrom Matrix colMeans
 #' @importFrom Matrix colSums
 #' @importFrom Matrix rowMeans

@@ -159,32 +159,18 @@ get_de_genes <- function(ref_centroids, ref_ratios, max_genes, verbose = FALSE)
 #' An internal method for computing the spatial neighborhood radius
 #' @param coordinates Coordinates of spots
 #' @param neighbors An internal parameter
-#' @param sample_size An internal parameter
 #' @param th.quantile An internal parameter
 #' @return A numeric value
 #' @keywords internal
 #' @noRd
 #'
-find_radius <- function(coordinates, neighbors = 8, sample_size = 2000, th.quantile = 0.9)
+find_radius <- function(coordinates, neighbors = 8, th.quantile = 0.9)
 {
-  N <- nrow(coordinates)
-  if(N > sample_size)
-  {
-    sample_spots <- sample(1:N, sample_size)
-    dists <- fields::rdist(coordinates[sample_spots, ], coordinates)
-  }else
-  {
-    dists <- as.matrix(stats::dist(coordinates))
-  }
-  min_dists <- matrix(NA, nrow = nrow(dists), ncol = neighbors)
-  for(r in 1:nrow(dists))
-  {
-    min_dists[r, ] <- sort(dists[r, which(dists[r,]>0)])[1:neighbors]
-  }
+  knn <- FNN::get.knn(coordinates, neighbors)
 
-  mid_dists <- as.vector(min_dists)
+  knn <- as.vector(knn$nn.dist)
 
-  radius <- as.numeric(stats::quantile(min_dists, th.quantile)) # 99%
+  radius <- as.numeric(stats::quantile(knn, th.quantile)) # 90%
 
   return(radius)
 }
@@ -208,8 +194,7 @@ find_spatial_pairs <- function(nrm_X, coordinates, radius = "auto", neighbors = 
   message("Computing spatial radius")
   if(radius == "auto")
   {
-    radius <- find_radius(coordinates, neighbors = neighbors,
-                          sample_size = 1000, th.quantile = th.quantile)
+    radius <- find_radius(coordinates, neighbors = neighbors, th.quantile = th.quantile)
     radius <- radius * 1.05
     # print(radius)
     gc()
@@ -282,9 +267,11 @@ get_pairs <- function(srt, th.spatial, th.nonspatial, max_size, radius = 'auto',
     srtp <- rbind(srtp, extra_pairs)
   }
 
-  if(nrow(srtp) == 0 & verbose)
+  if(nrow(srtp) == 0)
   {
-    message("No pairs satisfied the thresholds.")
+    if(verbose)
+      message("No pairs satisfied the thresholds.")
+
     srtp <- NULL
   }
 
@@ -366,14 +353,14 @@ draw_maps <- function(spatial, weights, normalize = TRUE, ncol = 4, trans = 'ide
     ggplot2::scale_color_viridis_c(legend_title, option = viridis_option, trans = trans)+
     ggplot2::xlab("") + ggplot2::ylab("")+
     ggplot2::theme(axis.text.x = ggplot2::element_blank(),
-          axis.ticks.x = ggplot2::element_blank(),
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks.y = ggplot2::element_blank(),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank(),
-          plot.background = ggplot2::element_rect(fill = "transparent", color = NA),
-          strip.background = ggplot2::element_rect(fill = 'transparent'),
-          panel.background = ggplot2::element_rect(fill = background)
+                   axis.ticks.x = ggplot2::element_blank(),
+                   axis.text.y = ggplot2::element_blank(),
+                   axis.ticks.y = ggplot2::element_blank(),
+                   panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank(),
+                   plot.background = ggplot2::element_rect(fill = "transparent", color = NA),
+                   strip.background = ggplot2::element_rect(fill = 'transparent'),
+                   panel.background = ggplot2::element_rect(fill = background)
     )+
     ggplot2::facet_wrap(~celltype, ncol = ncol)
 
