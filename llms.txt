@@ -1,0 +1,97 @@
+# DOT: Flexible Feature Transfer to Spatial Omics ![](reference/figures/DOT_icon.png)
+
+\## Overview
+
+`DOT` is a method for transferring cell features from a reference
+single-cell RNA-seq data to spots/cells in spatial omics. It operates by
+optimizing a combination of multiple objectives using a Frank-Wolfe
+algorithm to produce a high quality transfer. Apart from transferring
+cell types/states to spatial omics, `DOT` can be used for transferring
+other relevant categorical or continuous features from one set of omics
+to another, such as estimating the expression of missinng genes or
+transferring transcription factor/pathway activities.
+
+![](reference/figures/overview.png)
+
+For more information about how this package has been used with real data
+and expected outputs, please check the following link:
+
+- [DOT’s general
+  usage](https://saezlab.github.io/DOT/articles/general.html)
+
+## Installation
+
+`DOT` is available under the R package `DOTr` which you can install from
+[GitHub](https://github.com/) with:
+
+``` r
+devtools::install_github("saezlab/DOT")
+```
+
+## Dependencies
+
+- R (\>= 4.0)
+- R packages: fields, ggplot2, Matrix, methods, Seurat, stats, stringr
+
+For optimal performance on moderately sized instances, we recommend at
+least 4 GB of RAM. For large reference scRNA-seq data or very large
+spatial instances higher memory may be required.
+
+Installation takes less than five minutes. The sample dataset provided
+can be run in less than a minute on a “normal” desktop computer. DOT
+takes approximately 7 minutes to process a MERFISH MOp dataset with
+approximately 250 genes, 100 cell types and 4,000 spots.
+
+Operating system tested on: macOS Monterey 12.4
+
+## Python version
+
+Erick Armignol (<https://github.com/earmingol>) has implemented a native
+Python version of DOT, supporting also deployment on GPUs.
+
+Check out <https://github.com/earmingol/DOTpy> for information on how to
+install it, examples of use and more practical tips.
+
+Thank you Erick!
+
+## Citation
+
+If you use **DOT** for your research please cite the [following
+article](https://doi.org/10.1038/s41467-024-48868-z):
+
+> Rahimi, A., Vale-Silva, L.A., Fälth Savitski, M. et al. DOT: a
+> flexible multi-objective optimization framework for transferring
+> features across single-cell and spatial omics. Nat Commun 15, 4994
+> (2024). <https://doi.org/10.1038/s41467-024-48868-z>.
+
+# Package index
+
+## All functions
+
+- [`Dot-class`](https://saezlab.github.io/DOT/reference/Dot-class.md)
+  [`Dot`](https://saezlab.github.io/DOT/reference/Dot-class.md) : An S4
+  class to represent a DOT object.
+- [`create.DOT()`](https://saezlab.github.io/DOT/reference/create.DOT.md)
+  : Creating a DOT object based on the processed ref and srt data
+- [`dot.sample`](https://saezlab.github.io/DOT/reference/dot.sample.md)
+  : Sample reference scRNA-seq and spatial data
+- [`draw_maps()`](https://saezlab.github.io/DOT/reference/draw_maps.md)
+  : A plotting wrapper for drawing gene/abundance maps on tissue
+- [`run.DOT.highresolution()`](https://saezlab.github.io/DOT/reference/run.DOT.highresolution.md)
+  : A wrapper for running the DOT algorithm for high-resolution spatial
+  data with suggested parameters
+- [`run.DOT.lowresolution()`](https://saezlab.github.io/DOT/reference/run.DOT.lowresolution.md)
+  : A wrapper for running the DOT algorithm for low-resolution spatial
+  data with suggested parameters
+- [`setup.ref()`](https://saezlab.github.io/DOT/reference/setup.ref.md)
+  : Processing the reference single-cell data
+- [`setup.srt()`](https://saezlab.github.io/DOT/reference/setup.srt.md)
+  : Processing the target spatial data
+
+# Articles
+
+### All vignettes
+
+- [DOT: A flexible multi-objective optimization framework for
+  transferring features across single-cell and spatial
+  omics](https://saezlab.github.io/DOT/articles/general.md):
