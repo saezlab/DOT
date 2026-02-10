@@ -37,6 +37,15 @@ Installation takes less than five minutes. The sample dataset provided can be ru
 
 Operating system tested on: macOS Monterey 12.4
 
+
+## Python version
+
+Erick Armignol (https://github.com/earmingol) has implemented a native Python version of DOT, supporting also deployment on GPUs. 
+
+Check out https://github.com/earmingol/DOTpy for information on how to install it, examples of use and more practical tips.
+
+Thank you Erick!
+
 ## Citation
 If you use **DOT** for your research please cite the [following article](https://doi.org/10.1038/s41467-024-48868-z): 
 
